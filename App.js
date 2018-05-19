@@ -7,9 +7,10 @@ import {
   Image,
   Dimensions,
   ScrollView,
-  FlatList
+  FlatList,
 } from "react-native";
 
+import Post from './src/components/Post';
 type Props = {};
 
 /*
@@ -18,44 +19,40 @@ type Props = {};
 const width = Dimensions.get("screen").width;
 
 export default class App extends Component<Props> {
+  
+  constructor() {
+    super();
+    this.state = {
+      fotos: []
+    }
+  }
+
+  componentDidMount(){
+    fetch('https://instalura-api.herokuapp.com/api/public/fotos/rafael')
+    .then(resposta => resposta.json())
+    .then(json => this.setState(
+      {
+        fotos: json
+      }
+    ))
+  }
+
   render() {
-
-    /*
-      Criando Lista de usuários
-    */
-    const fotos = [
-      { id: "1", usuario: "Guilherme" },
-      { id: "2", usuario: "Taveira" },
-      { id: "3", usuario: "Berson" }
-    ];
-
     return (
       <FlatList
-      style={{ marginTop: 20 }}
+        style={styles.container}
         keyExtractor={item => item.id}
-        data={fotos}
-        renderItem={
-          ({item}) =>
-          <View>
-            <Text>{item.usuario}</Text>
-            <Image
-              source={require("./resources/img/23380327_371982659917927_2927897850807027661_n.jpg")}
-              style={{ width: width, height: width }}
-            />
-          </View>
-        }
+        data={this.state.fotos}
+        renderItem={({ item }) => (
+          <Post foto={item}/>
+        )}
       />
-      // <ScrollView style={{ marginTop: 20 }}>
-      //   {fotos.map(foto => 
-      //     <View key={foto.id}>
-      //       <Text>{foto.usuario}</Text>
-      //       <Image
-      //         source={require("./resources/img/23380327_371982659917927_2927897850807027661_n.jpg")}
-      //         style={{ width: width, height: width }}
-      //       />
-      //     </View>
-      //   )}
-      // </ScrollView>
     );
   }
 }
+
+const styles = StyleSheet.create({
+  container:{
+     marginTop: 30 
+  },
+});
